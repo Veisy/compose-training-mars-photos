@@ -15,33 +15,55 @@
  */
 package com.example.marsphotos.ui.screens
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.marsphotos.R
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
 
 @Composable
 fun HomeScreen(
-    marsUiState: String, modifier: Modifier = Modifier
+    photos: List<String>, modifier: Modifier = Modifier,
 ) {
-    ResultScreen(marsUiState, modifier)
+    ResultScreen(photos = photos, modifier = modifier)
 }
 
 /**
  * ResultScreen displaying number of photos retrieved.
  */
 @Composable
-fun ResultScreen(photos: String, modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
+fun ResultScreen(photos: List<String>, modifier: Modifier = Modifier) {
+    LazyColumn(
         modifier = modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = photos)
+        items(photos) { photo ->
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(photo)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                error = painterResource(R.drawable.ic_broken_image),
+                contentScale = ContentScale.Fit,
+                modifier = modifier
+                    .fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -49,6 +71,8 @@ fun ResultScreen(photos: String, modifier: Modifier = Modifier) {
 @Composable
 fun ResultScreenPreview() {
     MarsPhotosTheme {
-        ResultScreen(stringResource(R.string.placeholder_result))
+        ResultScreen(
+            listOf("https://mars.jpl.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631290305226E03_DXXX.jpg")
+        )
     }
 }
